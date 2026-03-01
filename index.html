@@ -144,6 +144,12 @@ footer a{color:var(--primary)}
 <div class="compare" id="compare"></div>
 </div>
 
+<div class="card" style="text-align:center">
+<button onclick="shareLink()" style="background:var(--primary);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:15px;cursor:pointer;font-weight:600;margin:4px">🔗 Link teilen</button>
+<button onclick="printResult()" style="background:var(--primary-dark);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:15px;cursor:pointer;font-weight:600;margin:4px">📄 Als PDF speichern</button>
+<div id="shareMsg" style="margin-top:8px;font-size:13px;color:var(--success);display:none">✓ Link in Zwischenablage kopiert!</div>
+</div>
+
 <footer>
 <p>Stundensatz-Rechner — 100% kostenlos, keine Daten werden gespeichert.</p>
 <p>Alle Berechnungen laufen lokal in deinem Browser. <a href="https://github.com/purplefbihaze-cpu/stundensatz">Open Source</a></p>
@@ -204,7 +210,38 @@ function calc(){
   `;
 }
 
-document.querySelectorAll('input').forEach(i=>i.addEventListener('input',calc));
+// URL state sharing
+function saveToURL(){
+  const params=new URLSearchParams();
+  ['netIncome','daysPerWeek','hoursPerDay','vacationDays','sickDays','adminPercent','officeCost','toolsCost','insuranceCost','otherCost','taxRate'].forEach(id=>{
+    params.set(id,document.getElementById(id).value);
+  });
+  history.replaceState(null,'','?'+params.toString());
+}
+
+function loadFromURL(){
+  const params=new URLSearchParams(location.search);
+  params.forEach((val,key)=>{
+    const el=document.getElementById(key);
+    if(el)el.value=val;
+  });
+}
+
+function shareLink(){
+  saveToURL();
+  navigator.clipboard.writeText(location.href).then(()=>{
+    const msg=document.getElementById('shareMsg');
+    msg.style.display='block';
+    setTimeout(()=>msg.style.display='none',3000);
+  });
+}
+
+function printResult(){
+  window.print();
+}
+
+loadFromURL();
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>{calc();saveToURL()}));
 calc();
 </script>
 </body>
