@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://purplefbihaze-cpu.github.io/stundensatz-rechner/sitemap.xml
